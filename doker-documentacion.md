@@ -13,8 +13,13 @@ docker run -d -p 80:80 docker/getting-started
 
 ## Contenedor del DBMS MariaBD
 docker pull mariadb
+## Contenedor de MariaDB con volumen 
+docker run --name ServerMariaDBG2  -e MARIADB_ROOT_PASSWORD=123456 \
+-d -p 3345:3306 e0236 
 
-
+## contenedor de MariaDB sin volumen 
+docker run --name ServerMariaDBG2  -e MARIADB_ROOT_PASSWORD=123456 \
+-d -v -p 3345:3306 e0236  
 
 ## Comandos Docker
 | Comando | Descripción |
