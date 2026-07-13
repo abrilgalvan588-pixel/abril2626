@@ -88,3 +88,450 @@ VALUES ('Correo@gmail.com');
 
 INSERT INTO material_2
 VALUES ('Correo2@gmail.com');
+
+-- Restricción Default
+CREATE TABLE categoria(
+	categoria_id INT NOT NULL IDENTITY (1,1) PRIMARY KEY,
+	nombre VARCHAR (30) NOT NULL UNIQUE,
+	activo BIT DEFAULT 1 
+
+);
+GO 
+
+CREATE TABLE categoria(
+	categoria_id INT NOT NULL IDENTITY (1,1)
+	CONSTRAINT pk_categoria 
+	PRIMARY KEY,
+	nombre VARCHAR (30) NOT NULL
+	CONSTRAINT uq_categoria_nombre
+	UNIQUE,
+	activo BIT 
+	CONSTRAINT df_categoria_activo
+	DEFAULT 1
+
+);
+GO
+
+CREATE TABLE categoria (
+categoria_id INT NOT NULL,
+nombre VARCHAR (30) NOT NULL,
+activo BIT
+CONSTRAINT  df_categoria_activo 
+DEFAULT 1,
+CONSTRAINT pk_categoria
+PRIMARY KEY (categoria_id),
+CONSTRAINT uq_categoria_nombre
+UNIQUE (nombre)
+);
+
+DROP TABLE categoria;
+
+INSERT INTO categoria
+VALUES ('carnes frias',1);
+
+INSERT INTO categoria
+VALUES ('carnes frias',DEFAULT);
+
+INSERT INTO categoria
+VALUES ('carnes calientes',1);
+
+INSERT INTO categoria (nombre)
+VALUES ('chochos',DEFAULT);
+
+-- Restriccion chek 
+-- Opcion de construnccion 1
+
+CREATE TABLE producto(
+	producto_id INT IDENTITY (1,1) PRIMARY KEY,
+	nombre VARCHAR (20) NOT NULL UNIQUE,
+	precio DECIMAL (10,2) NOT NULL CHECK (precio>0),
+	existencia INT NOT NULL CHECK (existencia>0 AND existencia <=100),
+	activo BIT NOT NULL DEFAULT 1
+
+);
+GO
+
+-- Opción de construcción 2
+
+CREATE TABLE producto (
+	producto_id INT IDENTITY (1,1)
+	CONSTRAINT pk_producto
+	PRIMARY KEY,
+	nombre VARCHAR (20) NOT NULL
+	CONSTRAINT uq_producto_nombre
+	UNIQUE,
+	precio DECIMAL(10,2)NOT NULL 
+	CONSTRAINT ck_producto_precio
+	CHECK (precio>0),
+	existencia INT NOT NULL 
+	CONSTRAINT ck_producto_existencia
+	CHECK (existencia > 0 AND existencia <=100),
+	activo BIT NOT NULL 
+	CONSTRAINT df_producto_activo
+	DEFAULT 1
+);
+
+-- Opcion de contrucion 3
+CREATE TABLE  producto  (
+producto_id INT NOT NULL,
+nombre VARCHAR (20) NOT NULL,
+descripcion VARCHAR (80),
+precio DECIMAL (10,2) NOT NULL, 
+EXISTENCIA INT NOT NULL,
+activo BIT NOT NULL
+CONSTRAINT df_producto_activo
+DEFAULT 1,
+-- Restriccion PK
+CONSTRAINT  pk_producto
+PRIMARY KEY (producto_id),
+-- Restriccion UNIQUE
+CONSTRAINT uq_producto_nombre
+UNIQUE (nombre),
+-- Restriccion check precio
+CONSTRAINT  ck_producto_pecio
+CHECK (precio>0),
+-- Restriccion check producto
+CONSTRAINT ck_producto_existencia
+CHECK (existencia BETWEEN 1 AND 100 )
+
+);
+GO
+
+DROP TABLE producto;
+
+INSERT INTO producto
+VALUES ('pitufo',200,99,0);
+
+SELECT *
+FROM producto;
+
+INSERT INTO producto 
+VALUES ('quemadita',200,100,DEFAULT);
+
+-- CREAR UNA BASE DE DATOS PARA EMPRESA PATITO 
+
+-- CREAR LA BD
+
+CREATE DATABASE empresa_patito
+GO
+
+-- USAR BD 
+USE empresa_patito;
+GO
+
+-- RESTRICCION DE FORENG KEY
+CREATE TABLE proveedor(
+	proveedor_id INT NOT NULL IDENTITY (1,1),
+	empresa VARCHAR (35) NOT NULL,
+	direccion VARCHAR (80) NULL,
+	limite_credito DECIMAL (10,2) NOT NULL, 
+	--PRIMARY KEY 
+	CONSTRAINT pk_proveedor 
+	PRIMARY KEY (proveedor_id),
+	-- UNIQUE
+	CONSTRAINT uq_proveerdor_empresa
+	UNIQUE (empresa),
+	-- CHECK limite credito
+	CONSTRAINT ck_proveedor_limite_credito
+	CHECK (limite_credito>0.0 AND limite_credito<=100000)
+	);
+	GO
+
+	CREATE TABLE producto(
+	fabricante_id CHAR (3) NOT NULL,
+	producto_id INT NOT NULL,
+	nombre VARCHAR (20) NOT NULL 
+	CONSTRAINT uq_producto_nombre
+	UNIQUE,
+	stock INT NOT NULL,
+	CONSTRAINT ck_producto_stock
+	CHECK (stock BETWEEN 1 AND 100),
+	precio DECIMAL (10,2) NOT NULL
+	CONSTRAINT ck_producto_precio
+	CHECK (precio > 0.0),
+	activo  BIT NOT NULL
+	CONSTRAINT df_produto_activo 
+	DEFAULT 1,
+	proveedor_id INT NOT NULL,
+	CONSTRAINT pk_producto 
+	PRIMARY KEY (fabricante_id, producto_id),
+	CONSTRAINT fk_producto_proveedor
+	FOREIGN KEY (proveedor_id)
+	REFERENCES proveedor (proveedor_id)
+
+	);
+	GO
+
+	-- INTEGRIDADES REFERENCIALES ON DELETE U ON UPDATE
+	-- NO ACTION, CASCADE,SET NULL,SET DEFAULT
+
+	CREATE DATABASE construccion;
+	GO
+
+	USE construccion;
+	GO
+
+	-- NO ACTION
+
+	CREATE TABLE cliente (
+	cliente_id INT
+	CONSTRAINT pk_cliente
+	PRIMARY KEY,
+	empresa VARCHAR (20)
+	CONSTRAINT uq_cliente_empresa
+	UNIQUE,
+	direccion VARCHAR (50),
+	tel VARCHAR (15) NOT NULL,
+	activo BIT NOT NULL,
+	created_at DATETIME2 NOT NULL
+	CONSTRAINT df_cliente_created_at
+	DEFAULT SYSDATETIME (),
+	updated_at DATETIME2 NOT NULL
+	DEFAULT SYSDATETIME ()
+	);
+	GO
+
+	CREATE TABLE telefono (
+		telefono_id INT  IDENTITY (1,1),
+		numero_telefono VARCHAR (15) NOT NULL,
+		created_at DATETIME2  NOT NULL
+		CONSTRAINT df_teñefoni_created_at
+		DEFAULT SYSDATETIME (),
+		update_at DATETIME NOT NULL
+		CONSTRAINT df_telefono_update_at
+		DEFAULT SYSDATETIME(),
+		cliente_id INT,
+		CONSTRAINT pk_telefono
+		PRIMARY KEY (telefono_id),
+		CONSTRAINT uq_telefono_numero_telefono
+		UNIQUE (numero_telefono),
+		CONSTRAINT ck_telefono_numero_telefono
+		CHECK (numero_telefono LIKE '[0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]'),
+		CONSTRAINT fk_telefono_cliente
+		FOREIGN KEY (cliente_id)
+		REFERENCES cliente(cliente_id)
+		ON DELETE NO ACTION 
+		ON UPDATE NO ACTION
+
+	
+	);
+	GO
+
+	INSERT INTO cliente
+	VALUES (1,'patito de Hule',NULL, '773-def-123',1,DEFAULT,DEFAULT);
+
+	INSERT INTO cliente(cliente_id,empresa,tel, activo )
+	VALUES (2,'Taqueria Mr. Linux','7731234567',1);
+
+	INSERT INTO telefono(numero_telefono,cliente_id) 
+	VALUES ('111-345-2347', 1 ),
+		   ('455-678-1234', 1 ),
+		   ('773-157-5896', 1 ),
+		   ('555-735-5684', 2 );
+
+			
+	
+	
+	
+	
+	DROP TABLE telefono
+	SELECT * FROM cliente;
+	SELECT * FROM telefono;
+	-- Eliminar con ON DELETE EN NO ACTION
+	--ELIMINAR LOS HIJO 
+	DELETE FROM telefono
+	WHERE cliente_id=1;
+
+	DELETE FROM cliente
+	WHERE cliente_id=1;
+
+
+
+	CHECK (Telefono LIKE '[0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]')
+
+	-- ACTUALIZAR CON UPDATE EN NO ACTION
+
+	-- Actualiza el hijo (poniendolo en uno)
+	UPDATE telefono
+	SET cliente_id=NULL
+	WHERE cliente_id=2;
+
+	-- Actualiza el hijo (poniendolo en uno)
+
+	UPDATE cliente
+	SET cliente_id=3
+	WHERE cliente_id=1;
+
+	-- INTEGRIDAD REFERENCIAL ON DELETE Y 
+	CREATE TABLE cliente (
+	cliente_id INT
+	CONSTRAINT pk_cliente
+	PRIMARY KEY,
+	empresa VARCHAR (20)
+	CONSTRAINT uq_cliente_empresa
+	UNIQUE,
+	direccion VARCHAR (50),
+	tel VARCHAR (15) NOT NULL,
+	activo BIT NOT NULL,
+	created_at DATETIME2 NOT NULL
+	CONSTRAINT df_cliente_created_at
+	DEFAULT SYSDATETIME (),
+	updated_at DATETIME2 NOT NULL
+	DEFAULT SYSDATETIME ()
+	);
+	GO
+
+	CREATE TABLE telefono (
+		telefono_id INT  IDENTITY (1,1),
+		numero_telefono VARCHAR (15) NOT NULL,
+		created_at DATETIME2  NOT NULL
+		CONSTRAINT df_teñefoni_created_at
+		DEFAULT SYSDATETIME (),
+		update_at DATETIME NOT NULL
+		CONSTRAINT df_telefono_update_at
+		DEFAULT SYSDATETIME(),
+		cliente_id INT,
+		CONSTRAINT pk_telefono
+		PRIMARY KEY (telefono_id),
+		CONSTRAINT uq_telefono_numero_telefono
+		UNIQUE (numero_telefono),
+		CONSTRAINT ck_telefono_numero_telefono
+		CHECK (numero_telefono LIKE '[0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]'),
+		CONSTRAINT fk_telefono_cliente
+		FOREIGN KEY (cliente_id)
+		REFERENCES cliente(cliente_id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+
+	
+	);
+	GO
+
+	DROP TABLE telefono;
+	INSERT INTO cliente
+	VALUES (1,'patito de Hule',NULL, '773-def-123',1,DEFAULT,DEFAULT);
+
+	INSERT INTO telefono (numero_telefono,cliente_id) 
+	VALUES ('111-345-2347', 1 ),
+		   ('455-678-1234', 1 ),
+		   ('773-157-5896', 1 )
+
+	SELECT * FROM cliente;
+	SELECT * FROM telefono;
+
+	--ELIMINAR en ON DELETE CASCADE 
+	-- Eliminar al padre
+	
+	DELETE FROM cliente
+	WHERE cliente_id=1;
+
+	-- ACTUALIZAR EN ON UPDATE CASCADE 
+	UPDATE cliente
+	SET cliente_id=10
+	WHERE cliente_id=1;
+	
+	-- TODO: EXPLICAR ON DELETE  Y ON UPDATE SET NULL, SET DEFAULT 
+	
+	DROP TABLE telefono;
+
+
+	-- ON DELETE
+	CREATE TABLE telefono (
+		telefono_id INT  IDENTITY (1,1),
+		numero_telefono VARCHAR (15) NOT NULL,
+		created_at DATETIME2  NOT NULL
+		CONSTRAINT df_teñefoni_created_at
+		DEFAULT SYSDATETIME (),
+		update_at DATETIME NOT NULL
+		CONSTRAINT df_telefono_update_at
+		DEFAULT SYSDATETIME(),
+		cliente_id INT,
+		CONSTRAINT pk_telefono
+		PRIMARY KEY (telefono_id),
+		CONSTRAINT uq_telefono_numero_telefono
+		UNIQUE (numero_telefono),
+		CONSTRAINT ck_telefono_numero_telefono
+		CHECK (numero_telefono LIKE '[0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]'),
+		CONSTRAINT fk_telefono_cliente
+		FOREIGN KEY (cliente_id)
+		REFERENCES cliente(cliente_id)
+		ON DELETE SET NULL
+		ON UPDATE SET NULL
+
+		);
+		GO
+
+
+		SELECT * FROM cliente
+		select * from telefono
+
+	INSERT INTO cliente (cliente_id, empresa,tel,activo)
+	VALUES (11,'bimbo','566788999',1);
+
+	INSERT INTO telefono(numero_telefono, cliente_id)
+	VALUES ('111-234-2347',11);
+
+	INSERT INTO telefono (numero_telefono,cliente_id) 
+	VALUES ('111-345-2347', 11 ),
+		   ('455-678-1234', 11 ),
+		   ('773-157-5896', 11 ),
+		   ('773-256-5896', 3);
+
+DELETE FROM cliente 
+WHERE cliente_id = 11;
+
+UPDATE cliente
+SET cliente_id = 15
+WHERE cliente_id = 3;
+
+-- ON DELETE Y ON UPDATE  SET NULL 
+DROP TABLE telefono;
+
+CREATE TABLE telefono (
+		telefono_id INT  IDENTITY (1,1),
+		numero_telefono VARCHAR (15) NOT NULL,
+		created_at DATETIME2  NOT NULL
+		CONSTRAINT df_teñefoni_created_at
+		DEFAULT SYSDATETIME (),
+		update_at DATETIME NOT NULL
+		CONSTRAINT df_telefono_update_at
+		DEFAULT SYSDATETIME(),
+		cliente_id INT
+		CONSTRAINT df_telefono_cliente_id
+		DEFAULT 0,
+		CONSTRAINT pk_telefono
+		PRIMARY KEY (telefono_id),
+		CONSTRAINT uq_telefono_numero_telefono
+		UNIQUE (numero_telefono),
+		CONSTRAINT ck_telefono_numero_telefono
+		CHECK (numero_telefono LIKE '[0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]'),
+		CONSTRAINT fk_telefono_cliente
+		FOREIGN KEY (cliente_id)
+		REFERENCES cliente(cliente_id)
+		ON DELETE SET DEFAULT
+		ON UPDATE SET DEFAULT
+
+		);
+		GO
+
+	INSERT INTO cliente (cliente_id, empresa,tel,activo)
+	VALUES (0,'mostrador','66669147',1);
+
+	INSERT INTO telefono(numero_telefono, cliente_id)
+	VALUES ('111-234-2347',2);
+
+	INSERT INTO telefono (numero_telefono,cliente_id) 
+	VALUES ('111-345-2347', 2 ),
+		   ('455-678-1234', 2 ),
+		   ('773-157-5896', 2 ),
+		   ('773-256-5896', 15 );
+
+DELETE FROM cliente
+WHERE cliente_id = 2;
+
+UPDATE cliente 
+SET cliente_id = 17
+WHERE cliente_id=15;
+
+		SELECT * FROM cliente
+	    select * from telefono
