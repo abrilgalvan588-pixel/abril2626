@@ -103,3 +103,15 @@ columna tipo_dato restricciones,
     DROP
   
 ```
+
+### Alter Table
+
+Permite modificar una tabal existente 
+
+puede:
+
+- Agregar columnas
+- Eliminar columnas
+- Modificar columnas 
+- Agregar restricciones 
+- Eliminar restricciones 
