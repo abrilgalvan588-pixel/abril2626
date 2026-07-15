@@ -4,7 +4,7 @@
 
 Un hospital registra informacion de sus pacientes:
 >De cada paciente que almacena: 
-- numero d paciente que lo 
+- numero de paciente que lo 
 identifica 
 - nombre
 - Fecha de nacimiento 
