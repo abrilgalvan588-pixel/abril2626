@@ -5,6 +5,8 @@ USE comercializadora;
 GO
 
 -- TABLE PRODUCTO se hizo priero xq no tiene claves primarias
+
+
 CREATE TABLE producto(
 numero_producto CHAR(3) NOT NULL,
 numero_fab CHAR (5) NOT NULL,

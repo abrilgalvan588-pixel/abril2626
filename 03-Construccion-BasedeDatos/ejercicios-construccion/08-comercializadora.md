@@ -136,6 +136,10 @@ GO
    REFERENCES reprecentante (reprecentante_id);
    /*===============CREAR LAS FOREIGN KEY DE OFICINA REPRECENTNATE  ====================*/
    ALTER TABLE cliente
+
+
+
+	
    ADD CONSTRAINT fk_cliente_reprecentante 
    FOREIGN KEY (cliente_id)
    REFERENCES reprecentante (reprecentante_id);
