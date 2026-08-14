@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../02-Modelado-BasedeDatos"
+		},
+		{
+			"path": "../03-Construccion-BasedeDatos"
+		},
+		{
+			"path": "../04-LenguajeEstructuradoConsultas-BasedeDatos"
+		},
+		{
+			"path": "../data"
+		},
+		{
+			"path": "../img"
+		}
+	]
+}
